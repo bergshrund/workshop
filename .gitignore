@@ -2,4 +2,4 @@
 node_modules
 logs
 .babel.json
-package-lock.json
+*/*.map

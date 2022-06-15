@@ -1,32 +1,15 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/index.js":
+/***/ "./src/task1.js":
 /*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _task2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./task2 */ \"./src/task2.js\");\n/* harmony import */ var _task2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_task2__WEBPACK_IMPORTED_MODULE_0__);\n\n\n//# sourceURL=webpack://astound/./src/index.js?");
-
-/***/ }),
-
-/***/ "./src/task2.js":
-/*!**********************!*\
-  !*** ./src/task2.js ***!
+  !*** ./src/task1.js ***!
   \**********************/
 /***/ (() => {
 
-eval("console.log('Call from task2.js');\n\n//# sourceURL=webpack://astound/./src/task2.js?");
+for (var i = 0; i < 12; i++) {
+  console.log("Hello" + i);
+}
 
 /***/ })
 
@@ -98,11 +81,19 @@ eval("console.log('Call from task2.js');\n\n//# sourceURL=webpack://astound/./sr
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _task1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./task1 */ "./src/task1.js");
+/* harmony import */ var _task1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_task1__WEBPACK_IMPORTED_MODULE_0__);
+
+})();
+
 /******/ })()
 ;
+//# sourceMappingURL=main.js.map
