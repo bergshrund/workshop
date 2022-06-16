@@ -1,3 +1,3 @@
-import './task1';
+import './task2';
 
 //# sourceMappingURL=/app.js.map
