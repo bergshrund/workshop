@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&amp;subset=cyrillic-ext,latin-ext" rel="stylesheet">
+    <title>Practice 3</title>
+    <style>
+
+    body {
+        font-size: 18px;
+        font-family: Roboto;
+        font-weight: 300;
+    }
+
+    body > .wrapper {
+         display: none;
+         position: fixed;
+         left: 0px;
+         top: 0px;
+         width: 100%;
+         height: 100%;
+         overflow: hidden;
+         background-color: rgba(0,0,0,.7);
+         z-index: 8;
+        opacity: 0;
+    }
+
+    button {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .wrapper > .popup {
+        margin: auto auto !important;
+        position: relative !important;
+        width: auto;
+        height: auto;
+    }
+  
+    .show-wrapper {
+        display: flex !important;
+    }
+
+    .popup {
+        display: none;
+        margin: auto !important;
+        position: relative !important;
+        width: 400px !important;
+        height: 170px !important;
+        background-color: rgb(230, 196, 196);
+    }
+
+    div.popup {
+        padding: 20px;
+    }
+
+    div.popup > div {
+        padding-top: 15px;
+        padding-bottom: 15px; 
+    }
+
+    div.error {
+        height: 18px; 
+        font-size: 14px;
+        color: red;
+    }
+
+    div.describe {
+        font-weight: 400;
+    }
+
+    .opened {
+        display: block;
+    }
+
+    .opacity-one {
+        opacity: 1 !important;
+    }
+
+    .to {
+        transition: opacity .4s ease-out .1s;
+        -webkit-transition: opacity .4s ease-out .1s;
+        -o-transition: opacity .4s ease-out .1s;
+        -moz-transition: opacity .4s ease-out .1s;
+        -ms-transition: opacity .4s ease-out .1s;
+    }
+    </style>    
+</head>
+
+<body>
+    <template>
+        <div class='describe'>Please, enter valid email address and press submit button</div>
+        <label for='email'>Email:</label>
+        <input type='text' id='email' value=''>
+        <div id="errorMessage" class='error'></div>
+        <button id='submit-button'>Submit</button>
+        <button id='cancel-button'>Cancel</button>
+    </template>
+    
+
+    <button id='subscription'>Subscription</button>
+    <div id='popup-wrapper' class='wrapper to'>
+        <div id='subscription-popup' class='popup'></div>
+    </div>
+    <script>
+        let subscriptionUri = 'https://jsbootcamp.ontrq.com/php/subscribe/?email=';
+
+        let subscriptionButton = document.querySelector('#subscription');
+        let subscriptionPopup = document.querySelector('#subscription-popup');
+        let wrapper = document.querySelector('#popup-wrapper');
+
+        if( subscriptionPopup && subscriptionButton && wrapper ) { 
+            subscriptionButton.addEventListener('click',() => { openSubscriptionPopup(subscriptionPopup) } );
+        
+            wrapper.addEventListener('click',
+                (event) => { 
+                    if( event.target.id === 'popup-wrapper' ) { 
+                        closeSubscriptionPopup(subscriptionPopup);
+                    }     
+                });
+        }
+
+        async function subsctibeToService(email) {
+           let response = await fetch(`${subscriptionUri}${email}`);
+           if(response.ok) {
+               let result = await response.json();
+               return result;
+           } else {
+               
+           }
+        }
+
+        function openSubscriptionPopup(popupContainer) {
+            popupContainer.innerHTML = '';
+            
+            let template = document.querySelector("template");
+            let templateClone = template.content.cloneNode(true);
+            popupContainer.appendChild(templateClone);
+
+            let submitButton = document.querySelector('#submit-button');
+            let cancelButton = document.querySelector('#cancel-button');
+            
+            submitButton && submitButton.addEventListener('click',() => { serviceSubscribe() } );
+            cancelButton && cancelButton.addEventListener('click',() => { closeSubscriptionPopup(popupContainer) } );
+
+            popupContainer.classList.add('opened');
+            wrapper && wrapper.classList.add('show-wrapper');
+            wrapper && setTimeout(() => { wrapper.classList.add('opacity-one'); },0); 
+        }
+
+        function closeSubscriptionPopup(popupContainer) {
+            wrapper.classList.remove('opacity-one');
+            wrapper && setTimeout(() => {
+                popupContainer.classList.remove('opened');
+                wrapper && wrapper.classList.remove('show-wrapper');
+            },400);
+        }
+
+        function showSubscriptionResult(result) {
+            if (result.status === 'success') {
+                let resultMessage = result.message; 
+                subscriptionPopup.innerHTML = resultMessage; 
+            } else if(result.status === 'error') {
+                let errorMessageDiv = document.querySelector('#errorMessage'); 
+                errorMessageDiv.innerHTML = result.message; 
+            }
+        }
+
+        function serviceSubscribe() {
+            let emailInputField = document.querySelector('#email');
+            let errorMessageDiv = document.querySelector('#errorMessage');
+
+            if (errorMessageDiv) {
+                errorMessageDiv.innerHTML = "";
+            }    
+
+            if(emailInputField) {
+                let email = emailInputField.value;
+                subsctibeToService(email)
+                .then(result => {
+                   showSubscriptionResult(result);
+                 })
+                .catch(error => { console.log(error) });
+            }
+        }
+
+    </script>
+</body>
+</html>

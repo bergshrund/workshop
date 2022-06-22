@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice 2</title>
+    <style>      
+    </style>    
+</head>
+
+<body>
+    <button id='daily-schedule'>Daily schedule</button>
+    <div id="schedule"></div>
+    <br>
+    <label for="promotion">Promotion:</label>
+    <div id="promotion"></div>
+    <br>
+    <button id='opens-in'>Opens in</button>
+
+    <script>
+    let storeSchedule = {
+    'workingDaysSchedule' : {
+        'Monday': {
+            'workTime' : {
+                'Start':'08:00',
+                'Finish':'15:00'
+            },
+            'manager': 'Mr.Dou',
+            'promotionName': 'Cyber Monday'
+        },
+        'Tuesday': {
+            'workTime' : {
+                'Start':'09:30',
+                'Finish':'20:00'
+            },
+            'manager': 'Mr.Jordan',
+            'promotionName': 'Green Tuesday'
+        },
+        'Wednesday': {
+            'workTime' : {
+                'Start':'09:00',
+                'Finish':'21:00'
+            },
+            'manager': 'Mrs.Smith',
+            'promotionName': 'Happy Wednesday'
+        },
+        'Thursday': {
+            'workTime' : {
+                'Start':'08:30',
+                'Finish':'21:30'
+            },
+            'manager': 'Mr.Obama',
+            'promotionName': 'Bloody Thursday'
+        },
+        'Friday': {
+            'workTime' : {
+                'Start':'07:30',
+                'Finish':'22:00'
+            },
+            'manager': 'Mrs.Merkel',
+            'promotionName': 'Black Friday'
+        },
+        'Saturday': {
+            'workTime' : {
+                'Start':'06:30',
+                'Finish':'21:30'
+            },
+            'manager': 'Mr.Trump',
+            'promotionName': 'Chill Saturday'
+        },
+        'Sunday': {
+            'workTime' : {
+                'Start':'06:00',
+                'Finish':'21:00'
+            },
+            'manager': 'Mr.Johnson',
+            'promotionName': 'Relaxing Sunday'
+        }
+    },
+    'Holidays' : ['Monday', 'Friday']
+    }
+
+   function showManagerName(div,managerName) {
+        if (div.dataset.managerShown) {
+            return;
+        }   
+        div.innerHTML += ` ${managerName}`;
+        div.dataset.managerShown = true; 
+    }
+
+    let promotionContent = document.querySelector('#promotion');
+    
+    function showCurrentPromotion(show,event) {
+        if (!promotionContent) return;   
+        let targetDay = event.target.id;
+        for (day in storeSchedule.workingDaysSchedule) {
+            if (day !== targetDay) {
+                continue;
+            }
+            promotionContent.innerHTML = show ? 
+                                        storeSchedule.workingDaysSchedule[day].promotionName : 
+                                        "";
+            break;
+        } 
+    }
+     
+    function showBlockList(container) {
+        container.innerHTML = '';  
+        let scheduleBlockFragment = new DocumentFragment();   
+        for (day in storeSchedule.workingDaysSchedule) {
+            let elemObject = storeSchedule.workingDaysSchedule[day];
+            let div = document.createElement('div');
+            div.id = day;
+            div.innerHTML = `Day: ${day} Worktime: Start: ${elemObject.workTime.Start} End: ${elemObject.workTime.Finish}`;
+            div.addEventListener('click',() => { showManagerName(div,elemObject.manager) }); 
+            scheduleBlockFragment.appendChild(div);
+        }
+        container.appendChild(scheduleBlockFragment);
+    }
+
+    let daysOfWeek = new Map([[0,'Sunday'],[1,'Monday'],[2,'Tuesday'],[3,'Wednesday'],[4,'Thursday'],[5,'Friday'],[6,'Saturday']]);
+
+    function getDaysWorkTime(dayName) {
+        return storeSchedule.workingDaysSchedule[dayName].workTime; 
+    }
+
+    function getNextWorkingDay(date) {
+        const DAYMILLISECONDS = 86400000;
+        let n = 1;
+        return new Date(date + DAYMILLISECONDS * n);
+    }
+
+    function calculateWorkingTimeTimestamps(date) {
+        let dateDay = date.getDay();
+        let daysName = daysOfWeek.get(dateDay);
+        let workHours = getDaysWorkTime(daysName);
+
+        // calculate open timestamp
+        let [startHour,startMinutes] = workHours.Start.split(/:/);
+        let startDate = new Date(date.getFullYear(), date.getMonth(), 
+                                date.getDate(), startHour, startMinutes);
+
+        // calculate finish timestamp
+        let [stopHour,stopMinutes] = workHours.Finish.split(/:/);
+        let finishDate = new Date(date.getFullYear(), date.getMonth(), 
+                                date.getDate(), stopHour, stopMinutes);
+
+        return [startDate.getTime(),finishDate.getTime()];
+    }
+
+    function calculateTimeBeforeOpen() {
+        let currentDate = new Date();
+        let currentTimestamp = Date.parse(currentDate);
+
+        let [startTimestamp,stopTimestamp] = calculateWorkingTimeTimestamps(currentDate);
+        
+        if ( currentTimestamp < startTimestamp ) {
+
+            console.log(`${(startTimestamp - currentTimestamp) / 1000} sec left before opening`);
+        
+        } else if( currentTimestamp >= startTimestamp && currentTimestamp < stopTimestamp ) {
+
+            console.log('Store is working now');
+
+        } else {
+
+            [startTimestamp] = calculateWorkingTimeTimestamps(getNextWorkingDay(currentTimestamp));
+            console.log(`${(startTimestamp - currentTimestamp) / 1000} sec left before opening`);
+
+        }
+    }
+
+    function showTimeBeforeOpen(timerId) {
+        if (timerId) {
+        clearInterval(timerId);
+        }
+        timerId = setInterval(() => { calculateTimeBeforeOpen() },10000);
+    }
+
+    let dailyScheduleButton = document.querySelector('#daily-schedule');
+    let dailyScheduleContent = document.querySelector('#schedule'); 
+
+    if(dailyScheduleButton && dailyScheduleContent) { 
+        dailyScheduleButton.addEventListener('click',() => {showBlockList(dailyScheduleContent)} );
+        dailyScheduleContent.addEventListener('mouseover',(event)=>{ showCurrentPromotion(true,event)});
+        dailyScheduleContent.addEventListener('mouseout',(event)=>{ showCurrentPromotion(false,event)});
+    }
+
+    let timer;
+    opensInButton = document.querySelector('#opens-in');
+    opensInButton && opensInButton.addEventListener('click',() => { showTimeBeforeOpen(timer) } );
+
+    </script>
+</body>
+</html>
